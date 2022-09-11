@@ -1,0 +1,49 @@
+﻿@model IEnumerable<LeaveScheduler.Models.EmpRequestMiniViewModel>
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Leave Schedule for @ViewData["name"]</h1>
+@if ((int)ViewData["days"] == 1)
+{
+    <h4>1 day available for scheduling</h4>
+
+}
+else
+{
+    <h4>@ViewData["days"] days available for scheduling</h4>
+}
+
+<p>
+    <a asp-action="Create" asp-controller="Requests" asp-route-id="@ViewData["id"]">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.RequestDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RequestStatus)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.RequestDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RequestStatus)
+            </td>
+            <td>
+                    <a asp-action="Edit" asp-route-id="@item.RequestID" asp-controller="Requests">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.RequestID" asp-controller="Requests">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.RequestID" asp-controller="Requests">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

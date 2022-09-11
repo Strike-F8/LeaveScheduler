@@ -1,0 +1,40 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model IEnumerable<LeaveScheduler.Models.Employee>
+@{
+}
+
+<h2>Schedule</h2>
+
+<h4>Please select a schedule below</h4>
+<!-- List of schedules here. Only the employee for employees. Several options for managers-->
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.EmployeeID" asp-controller="Schedule">View Schedule</a> |
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
