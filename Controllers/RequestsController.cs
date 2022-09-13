@@ -74,6 +74,19 @@ namespace LeaveScheduler.Controllers
         // GET: Requests/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            // Check if the user is a manager
+            var identity = (System.Security.Claims.ClaimsIdentity)HttpContext.User.Identity;
+            int employeeID = Convert.ToInt32(identity.Claims.First(c => c.Type == "EmployeeID").Value);
+            
+            var result = from p in _context.Manager
+                         where p.EmployeeID == employeeID
+                         select p;
+
+            if (result.Any())
+                ViewData["isManager"] = true;
+            else
+                ViewData["isManager"] = false;
+
             if (id == null || _context.Request == null)
             {
                 return NotFound();
