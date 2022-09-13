@@ -1,10 +1,12 @@
 ﻿using LeaveScheduler.Data;
 using LeaveScheduler.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace LeaveScheduler.Controllers
 {
+    [Authorize]
     public class ScheduleController : Controller
     {
 

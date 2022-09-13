@@ -23,8 +23,8 @@
     }
   },
   "iisSettings": {
-    "windowsAuthentication": true,
-    "anonymousAuthentication": false,
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "https://localhost:7113",
       "sslPort": 44337

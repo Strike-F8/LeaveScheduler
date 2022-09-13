@@ -14,12 +14,12 @@ public class HomeController : Controller
     {
         _logger = logger;
     }
-
+    [AllowAnonymous]
     public IActionResult Index()
     {
         return LocalRedirect("~/Login");
     }
-
+    [AllowAnonymous]
     public IActionResult Privacy()
     {
         return View();

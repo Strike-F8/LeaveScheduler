@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace LeaveScheduler.Controllers
 {
+    [AllowAnonymous]
     public class LoginController : Controller
     {
         private readonly LeaveSchedulerContext _context;
@@ -39,7 +40,7 @@ namespace LeaveScheduler.Controllers
                          select p;
             return result.FirstOrDefault();
         }
-
+        [AllowAnonymous]
         public async Task<IActionResult> Login([Bind("UserName,Password")] User input)
         {
             if (ModelState.IsValid)
@@ -106,7 +107,7 @@ namespace LeaveScheduler.Controllers
             // Something failed. Redisplay the form.
             return View();
         }
-
+        [AllowAnonymous]
         public async Task<IActionResult> Logout()
         {
             // Clear the existing external cookie

@@ -5,6 +5,7 @@ using LeaveScheduler.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,7 @@ builder.Services.AddDbContext<LeaveSchedulerContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("LeaveSchedulerContext") ?? throw new InvalidOperationException("Connection string 'LeaveSchedulerContext' not found.")));
 
 // Add services to the container.
-builder.Services.AddRazorPages();
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -23,12 +24,16 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
         options.SlidingExpiration = true;
-        options.AccessDeniedPath = "/Forbidden";
+        options.AccessDeniedPath = "/Error";
+        options.LoginPath = "/Login";
+        options.LogoutPath = "/Login/Logout";
+        options.ReturnUrlParameter = "/Schedule";
     });
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("EmployeeID"));
+    options.AddPolicy("ManagersOnly", policy => policy.RequireClaim("EmployeeID"));
+    options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
 });
 
 builder.Services.AddMvc();
@@ -53,14 +58,13 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseAuthentication();
-app.UseAuthorization();
-
 app.MapRazorPages();
 
 app.MapDefaultControllerRoute();
 
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 var cookiePolicyOptions = new CookiePolicyOptions
 {
     MinimumSameSitePolicy = SameSiteMode.Strict,
