@@ -17,7 +17,7 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        return View();
+        return LocalRedirect("~/Login");
     }
 
     public IActionResult Privacy()

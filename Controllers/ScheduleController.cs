@@ -16,9 +16,58 @@ namespace LeaveScheduler.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            return _context.Employee != null ?
+            // Check the current user's identity to retrieve the appropriate list of schedules
+            var identity = (System.Security.Claims.ClaimsIdentity)HttpContext.User.Identity;
+            int employeeID = Convert.ToInt32(identity.Claims.First(c => c.Type == "EmployeeID").Value);
+
+            if(IsManager(employeeID))
+            {
+                // User is a manager and should have access to the schedules of employees under him/her
+                var manager = from p in _context.Manager
+                            where p.EmployeeID == employeeID
+                            select p;
+                int managerID = manager.First().ManagerID;
+
+                var employees = from p in _context.EmployeeManager
+                                join emp in _context.Employee on p.EmployeeID equals emp.EmployeeID
+                                where p.ManagerID == managerID
+                                select emp;
+
+                var m = from p in _context.Employee
+                          where p.EmployeeID == employeeID
+                          select p;
+
+                List<Employee> employeeList = new List<Employee>();
+
+                employeeList.Add(m.First());
+                employeeList.AddRange(employees.ToList());
+
+                return View(employeeList);
+            }
+            else
+            {
+                // user is not a manager and should only have access to his/her own schedule
+                var result = from p in _context.Employee
+                             where p.EmployeeID == employeeID
+                             select p;
+
+                return _context.Employee != null ?
+                    View(await result.ToListAsync()) :
+                    Problem("Entity set 'LeaveSchedulerContext.Employee' is null.");
+            }
+
+            /*return _context.Employee != null ?
                         View(await _context.Employee.ToListAsync()) :
-                        Problem("Entity set 'LeaveSchedulerContext.Employee' is null.");
+                        Problem("Entity set 'LeaveSchedulerContext.Employee' is null."); */
+        }
+        public bool IsManager(int id)
+        {
+            var result = from p in _context.Manager
+                         where p.EmployeeID == id
+                         select p;
+            if (result.Any())
+                return true;
+            return false;
         }
 
         public ViewResult Details(int? id)

@@ -18,6 +18,7 @@ namespace LeaveScheduler.Controllers
     public class LoginController : Controller
     {
         private readonly LeaveSchedulerContext _context;
+        private string message;
 
         public LoginController(LeaveSchedulerContext context)
         {
@@ -31,37 +32,87 @@ namespace LeaveScheduler.Controllers
             return View();
         }
 
-        public IActionResult Login([Bind("UserID,EmployeeID,UserName,Password")] User user)
+        public User AuthenticateUser(string username, string pwd)
         {
-            var cred = from p in _context.User
-                        where p.UserName == user.UserName
-                        select p.Password;
+            var result = from p in _context.User
+                         where p.UserName == username && p.Password == pwd
+                         select p;
+            return result.FirstOrDefault();
+        }
 
-            if (cred == null)
+        public async Task<IActionResult> Login([Bind("UserName,Password")] User input)
+        {
+            if (ModelState.IsValid)
             {
-                Console.WriteLine($"Username {user.UserName} does not match");
-                ViewData["message"] = "Login is null";
-                return RedirectToAction("Login");
+                // Use Input.Email and Input.Password to authenticate the user
+                // with your custom authentication logic.
+                //
+                // For demonstration purposes, the sample validates the user
+                // on the email address maria.rodriguez@contoso.com with 
+                // any password that passes model validation.
+
+                User user = AuthenticateUser(input.UserName, input.Password);
+                Console.WriteLine(input.UserName + " PASSWORD?????" + input.Password);
+                ViewData["message"] = message;
+                if (user == null)
+                {
+                    message = "Invalid login attempt.";
+                    return LocalRedirect($"~/Login");
+                }
+
+                var claims = new List<Claim>
+                {
+                    new Claim("Name", user.UserName),
+                    new Claim("EmployeeID", user.EmployeeID.ToString()),
+                };
+
+
+                var claimsIdentity = new ClaimsIdentity(
+                    claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                var authProperties = new AuthenticationProperties
+                {
+                    AllowRefresh = true,
+                    // Refreshing the authentication session should be allowed.
+
+                    //ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
+                    // The time at which the authentication ticket expires. A 
+                    // value set here overrides the ExpireTimeSpan option of 
+                    // CookieAuthenticationOptions set with AddCookie.
+
+                    IsPersistent = true,
+                    // Whether the authentication session is persisted across 
+                    // multiple requests. When used with cookies, controls
+                    // whether the cookie's lifetime is absolute (matching the
+                    // lifetime of the authentication ticket) or session-based.
+
+                    //IssuedUtc = <DateTimeOffset>,
+                    // The time at which the authentication ticket was issued.
+
+                    //RedirectUri = <string>
+                    // The full path or absolute URI to be used as an http 
+                    // redirect response value.
+                };
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
+
+                //redirect to schedule list after authentication
+                return LocalRedirect($"~/Schedule");
             }
 
-            string pwd = cred.ToString();
-            Console.WriteLine("Password is "+pwd);
-            if (user.Password != pwd)
-            {
-                ViewData["message"] = $"Password: {pwd} is incorrect";
-                return RedirectToAction("Login");
-            }
+            // Something failed. Redisplay the form.
+            return View();
+        }
 
-            var identity = new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.Name, user.UserName)
-            }, CookieAuthenticationDefaults.AuthenticationScheme);
+        public async Task<IActionResult> Logout()
+        {
+            // Clear the existing external cookie
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            var principal = new ClaimsPrincipal(identity);
-
-            var login = HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-            return RedirectToAction("Schedule");
+            return LocalRedirect($"~/Login/");
         }
 
         private bool UserExists(int id)

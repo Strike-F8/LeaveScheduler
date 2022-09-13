@@ -1,4 +1,14 @@
-﻿<!DOCTYPE html>
+﻿@{
+    string username = "";
+    int employeeID = 0;
+    if(Context.User.Identity.IsAuthenticated)
+    {
+        var identity = (System.Security.Claims.ClaimsIdentity)Context.User.Identity;
+        username = identity.Claims.First(c => c.Type == "Name").Value;
+        employeeID = Convert.ToInt32(identity.Claims.First(c => c.Type == "EmployeeID").Value);
+    }
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -25,12 +35,25 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Index">Login</a>
-                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Schedule" asp-action="Index">Schedule</a>
                         </li>
+                        @if(Context.User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                            <p class="text-dark">Welcome @username</p>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Login" asp-action="Logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Index">Login</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

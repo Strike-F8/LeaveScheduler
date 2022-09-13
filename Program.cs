@@ -4,10 +4,10 @@ using LeaveScheduler.Data;
 using LeaveScheduler.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -15,7 +15,21 @@ builder.Services.AddDbContext<LeaveSchedulerContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("LeaveSchedulerContext") ?? throw new InvalidOperationException("Connection string 'LeaveSchedulerContext' not found.")));
 
 // Add services to the container.
+builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        options.SlidingExpiration = true;
+        options.AccessDeniedPath = "/Forbidden";
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("EmployeeID"));
+});
 
 builder.Services.AddMvc();
 var app = builder.Build();

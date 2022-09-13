@@ -88,31 +88,35 @@ namespace LeaveScheduler.Models
                         new User
                         {
                             // Create login for Bob Smith
-                            EmployeeID = 6,
+                            EmployeeID = 1,
                             UserName = "bob.smith",
                             Password = "bobpassword"
                         },
                         new User
                         {
-                            EmployeeID = 7,
+                            // Create login for George Thomas
+                            EmployeeID = 2,
                             UserName = "george.thomas",
                             Password = "georgepassword",
                         },
                         new User
                         {
-                            EmployeeID = 8,
+                            // Create login for Emma Rogers
+                            EmployeeID = 3,
                             UserName = "emma.rogers",
                             Password = "emmapassword"
                         },
                         new User
                         {
-                            EmployeeID = 9,
+                            // Create login for Carl Smith
+                            EmployeeID = 4,
                             UserName = "carl.smith",
                             Password = "carlpassword"
                         },
                         new User
                         {
-                            EmployeeID = 10,
+                            // Create login for Jane Doe
+                            EmployeeID = 5,
                             UserName = "jane.doe",
                             Password = "janepassword"
                         }
