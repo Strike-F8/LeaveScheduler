@@ -22,7 +22,16 @@ namespace LeaveScheduler.Controllers
         // GET: Managers
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Manager.ToListAsync());
+            var results = from m in _context.Manager
+                          join e in _context.Employee on m.EmployeeID equals e.EmployeeID
+                          select new ManagerEmployeeMiniViewModel
+                          {
+                              ManagerName = e.FirstName + " " + e.LastName,
+                              EmployeeID = e.EmployeeID,
+                              ManagerID = m.ManagerID
+                          };
+
+              return View(await results.ToListAsync());
         }
 
         // GET: Managers/Details/5

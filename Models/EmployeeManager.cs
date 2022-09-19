@@ -6,6 +6,16 @@ namespace LeaveScheduler.Models
 {
     public class EmployeeManager
     {
+        public EmployeeManager()
+        {
+
+        }
+        public EmployeeManager(int managerID, int employeeID)
+        {
+            ManagerID = managerID;
+            EmployeeID = employeeID;
+        }
+
         public int ID { get; set; }
 
         [Column(Order = 0)]

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<LeaveScheduler.Models.Manager>
+﻿@model IEnumerable<LeaveScheduler.Models.ManagerEmployeeMiniViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -15,7 +15,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.EmployeeID)
             </th>
-            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.ManagerID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ManagerName)
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -25,9 +30,15 @@
                 @Html.DisplayFor(modelItem => item.EmployeeID)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ManagerID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ManagerID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ManagerID">Delete</a>
+                @Html.DisplayFor(modelItem => item.ManagerID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ManagerName)
+            </td>
+            <td>
+                <a asp-controller="Employees" asp-action="Edit" asp-route-id="@item.EmployeeID">Edit</a> |
+                <a asp-controller="Employees" asp-action="Details" asp-route-id="@item.EmployeeID">Details</a> |
+                <a asp-controller="Managers"  asp-action="Delete" asp-route-id="@item.ManagerID">Demote</a>
             </td>
         </tr>
 }

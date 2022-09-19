@@ -5,7 +5,6 @@ using System.Diagnostics;
 
 
 namespace LeaveScheduler.Controllers;
-[AllowAnonymous]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -21,6 +20,11 @@ public class HomeController : Controller
     }
     [AllowAnonymous]
     public IActionResult Privacy()
+    {
+        return View();
+    }
+
+    public IActionResult Administration()
     {
         return View();
     }

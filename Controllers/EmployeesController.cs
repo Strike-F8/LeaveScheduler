@@ -56,12 +56,31 @@ namespace LeaveScheduler.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EmployeeID,FirstName,LastName,AvailableLeaveTime")] Employee employee)
+        public async Task<IActionResult> Create([Bind("FirstName,LastName,AvailableLeaveTime")] Employee employee)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(employee);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(); // Insert the new employee to the database
+
+                // Get the employee id of the new employee
+                var result = from e in _context.Employee
+                             where e.FirstName == employee.FirstName &&
+                             e.LastName == employee.LastName &&
+                             e.AvailableLeaveTime == employee.AvailableLeaveTime
+                             select e;
+                int employeeID = (int)result.First().EmployeeID;
+
+                // Create a user for this employee
+                // Username is firstname.lastname
+                // password is firstnamepassword
+                _context.User.Add(new User
+                {
+                    UserName = (employee.FirstName + "." + employee.LastName).ToLower(),
+                    Password = employee.FirstName.ToLower() + "password",
+                    EmployeeID = employeeID,
+                });
+                await _context.SaveChangesAsync(); // Insert the new user to the database
                 return RedirectToAction(nameof(Index));
             }
             return View(employee);

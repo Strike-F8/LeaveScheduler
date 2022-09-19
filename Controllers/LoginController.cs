@@ -61,12 +61,25 @@ namespace LeaveScheduler.Controllers
                     return LocalRedirect($"~/Login");
                 }
 
-                var claims = new List<Claim>
-                {
-                    new Claim("Name", user.UserName),
-                    new Claim("EmployeeID", user.EmployeeID.ToString()),
-                };
+                var result = from p in _context.Manager
+                             where p.EmployeeID == user.EmployeeID
+                             select p;
+                var claims = new List<Claim>();
 
+                if(result.Any())
+                {
+                    // the employee is a manager
+                    claims.Add(new Claim("Name", user.UserName));
+                    claims.Add(new Claim("EmployeeID", user.EmployeeID.ToString()));
+                    claims.Add(new Claim("isManager", "true"));
+                }
+                else
+                {
+                    // the employee is not a manager
+                    claims.Add(new Claim("Name", user.UserName));
+                    claims.Add(new Claim("EmployeeID", user.EmployeeID.ToString()));
+                    claims.Add(new Claim("isManager", "false"));
+                }
 
                 var claimsIdentity = new ClaimsIdentity(
                     claims, CookieAuthenticationDefaults.AuthenticationScheme);

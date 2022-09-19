@@ -39,9 +39,10 @@ namespace LeaveScheduler.Controllers
                           where p.EmployeeID == employeeID
                           select p;
 
-                List<Employee> employeeList = new List<Employee>();
-
-                employeeList.Add(m.First());
+                List<Employee> employeeList = new()
+                {
+                    m.First()
+                };
                 employeeList.AddRange(employees.ToList());
 
                 return View(employeeList);
@@ -79,7 +80,7 @@ namespace LeaveScheduler.Controllers
             ViewData["id"] = id;
             ViewData["days"] = _context.Employee.Find(id).AvailableLeaveTime;
 
-            List<EmpRequestMiniViewModel> model = new List<EmpRequestMiniViewModel>();
+            List<EmpRequestMiniViewModel> model = new();
             using (_context)
             {
                 var results = from p in _context.Employee

@@ -44,8 +44,9 @@ namespace LeaveScheduler.Controllers
         }
 
         // GET: EmployeeManagers/Create
-        public IActionResult Create()
+        public IActionResult Create(int id)
         {
+            ViewData["id"] = id;
             return View();
         }
 
@@ -54,7 +55,7 @@ namespace LeaveScheduler.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,ManagerID,EmployeeID")] EmployeeManager employeeManager)
+        public async Task<IActionResult> Create([Bind("ManagerID,EmployeeID")] EmployeeManager employeeManager)
         {
             if (ModelState.IsValid)
             {
@@ -72,13 +73,14 @@ namespace LeaveScheduler.Controllers
             {
                 return NotFound();
             }
-
-            var employeeManager = await _context.EmployeeManager.FindAsync(id);
-            if (employeeManager == null)
-            {
-                return NotFound();
-            }
-            return View(employeeManager);
+            // Check if this employee already has a manager
+            var result = from e in _context.EmployeeManager
+                         where e.EmployeeID == id
+                         select e;
+            if (result.Any()) // If a manager exists, edit the current manager
+                return View(result.First());
+            else // if a manager does not exist, create one
+                return LocalRedirect($"/EmployeeManagers/Create/{id}");
         }
 
         // POST: EmployeeManagers/Edit/5
@@ -88,21 +90,30 @@ namespace LeaveScheduler.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,ManagerID,EmployeeID")] EmployeeManager employeeManager)
         {
-            if (id != employeeManager.ID)
+            if (id != employeeManager.EmployeeID)
             {
                 return NotFound();
             }
+            // Get the correct EmployeeManagerID so that it can be updated
+            var result = from em in _context.EmployeeManager
+                         where em.EmployeeID == employeeManager.EmployeeID
+                         select em;
+            int emID = (int)result.First().ID;
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(employeeManager);
+                    EmployeeManager em = _context.EmployeeManager.Find(emID);
+                    em.ManagerID = employeeManager.ManagerID;
+                    em.EmployeeID = employeeManager.EmployeeID;
+
+                    _context.EmployeeManager.Update(em);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EmployeeManagerExists(employeeManager.ID))
+                    if (!EmployeeManagerExists(emID))
                     {
                         return NotFound();
                     }
@@ -111,9 +122,9 @@ namespace LeaveScheduler.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return LocalRedirect("/Employees");
             }
-            return View(employeeManager);
+            return LocalRedirect("/Schedule");
         }
 
         // GET: EmployeeManagers/Delete/5

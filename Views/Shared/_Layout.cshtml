@@ -6,6 +6,14 @@
         var identity = (System.Security.Claims.ClaimsIdentity)Context.User.Identity;
         username = identity.Claims.First(c => c.Type == "Name").Value;
         employeeID = Convert.ToInt32(identity.Claims.First(c => c.Type == "EmployeeID").Value);
+
+        // Check if the user is a manager
+        string isManager = Convert.ToString(identity.Claims.First(c => c.Type == "isManager").Value);
+
+        if (isManager == "true")
+            ViewData["isManager"] = true;
+        else
+           ViewData["isManager"] = false;
     }
 }
 <!DOCTYPE html>
@@ -42,11 +50,18 @@
                         @if(Context.User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                            <p class="text-dark">Welcome @username</p>
+                                <p class="text-dark">Welcome @username</p>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Login" asp-action="Logout">Logout</a>
                             </li>
+                            // If the user is a manager, display the link to the administration page
+                            if((bool)ViewData["isManager"] == true)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="" asp-action="Administration">Administration</a>
+                                </li>
+                            }
                         }
                         else
                         {
