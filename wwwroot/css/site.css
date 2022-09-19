@@ -8,6 +8,11 @@ html {
   }
 }
 
+@media print {
+    .noPrint {
+        display: none;
+    }
+}
 html {
   position: relative;
   min-height: 100%;

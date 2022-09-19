@@ -16,7 +16,7 @@ else
 }
 
 <p>
-    <a asp-action="Create" asp-controller="Requests" asp-route-id="@ViewData["id"]">Create New</a>
+    <a class="noPrint" asp-action="Create" asp-controller="Requests" asp-route-id="@ViewData["id"]">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -38,7 +38,7 @@ else
             <td>
                 @Html.DisplayFor(modelItem => item.RequestStatus)
             </td>
-            <td>
+            <td class="noPrint">
                     <a asp-action="Edit" asp-route-id="@item.RequestID" asp-controller="Requests">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.RequestID" asp-controller="Requests">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.RequestID" asp-controller="Requests">Delete</a>
@@ -47,3 +47,6 @@ else
 }
     </tbody>
 </table>
+<button onclick="window.print();" class="noPrint">
+    Print This Schedule
+</button>
