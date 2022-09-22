@@ -16,16 +16,16 @@ else
 }
 
 <p>
-    <a class="noPrint" asp-action="Create" asp-controller="Requests" asp-route-id="@ViewData["id"]">Create New</a>
+    <a class="noPrint" asp-action="Create" asp-controller="Requests" asp-route-id="@ViewData["id"]">Create New Request</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.RequestDate)
+                <label class="control-label" for="RequestDate">Request Date</label>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.RequestStatus)
+                <label class="control-label" for="RequestStatus">Request Approval Status</label>
             </th>
         </tr>
     </thead>

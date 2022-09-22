@@ -78,6 +78,15 @@ namespace LeaveScheduler.Controllers
             {
                 return NotFound();
             }
+            // Check if the user is authorized to edit this password
+            // If not, redirect to the correct page
+            var identity = (System.Security.Claims.ClaimsIdentity)HttpContext.User.Identity;
+            int userID = Convert.ToInt32(identity.Claims.First(c => c.Type == "UserID").Value);
+
+            if (id != userID)
+            {
+                return LocalRedirect($"~/Users/Edit/{userID}");
+            }
             return View(user);
         }
 
@@ -111,7 +120,7 @@ namespace LeaveScheduler.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return LocalRedirect("/Schedule");
             }
             return View(user);
         }

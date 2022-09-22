@@ -72,6 +72,7 @@ namespace LeaveScheduler.Controllers
                     claims.Add(new Claim("Name", user.UserName));
                     claims.Add(new Claim("EmployeeID", user.EmployeeID.ToString()));
                     claims.Add(new Claim("isManager", "true"));
+                    claims.Add(new Claim("UserID", user.UserID.ToString()));
                 }
                 else
                 {
@@ -79,6 +80,7 @@ namespace LeaveScheduler.Controllers
                     claims.Add(new Claim("Name", user.UserName));
                     claims.Add(new Claim("EmployeeID", user.EmployeeID.ToString()));
                     claims.Add(new Claim("isManager", "false"));
+                    claims.Add(new Claim("UserID", user.UserID.ToString()));
                 }
 
                 var claimsIdentity = new ClaimsIdentity(
