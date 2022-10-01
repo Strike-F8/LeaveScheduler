@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,16 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddMvc();
 var app = builder.Build();
+
+// create the database
+ApplyMigrations(app);
+
+static void ApplyMigrations(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<LeaveSchedulerContext>();
+    db.Database.Migrate();
+}
 
 // Seed the database if it is empty
 using (var scope = app.Services.CreateScope())
@@ -75,4 +86,4 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Run();
+    app.Run();
